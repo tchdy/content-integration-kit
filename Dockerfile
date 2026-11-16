@@ -1,11 +1,11 @@
-FROM python:3.13-slim
+FROM python:3.13-slim-trixie
 
 # xmlsec (needed for SAML signature checks) compiles against the system XML
 # security library. lxml is built from source too, so both use the SAME
 # libxml2; mixing a wheel-bundled libxml2 with the system one fails at import.
 RUN apt-get update \
  && apt-get install -y --no-install-recommends build-essential pkg-config \
-      libxml2-dev libxslt1-dev libxmlsec1-dev libxmlsec1-openssl \
+      libxml2-dev libxslt1-dev libxmlsec1-dev \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
