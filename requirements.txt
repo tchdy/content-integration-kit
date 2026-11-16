@@ -1,0 +1,10 @@
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30
+httpx>=0.27,<1
+itsdangerous>=2.2
+python-multipart>=0.0.9
+# lxml and xmlsec must link the SAME libxml2. The Dockerfile builds lxml from
+# source against the system libxml2 to guarantee that (see RUNBOOK: "lxml & xmlsec libxml2 mismatch").
+lxml>=5.2
+xmlsec>=1.3.14
+python3-saml>=1.16

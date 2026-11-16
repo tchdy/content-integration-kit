@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: System libraries for SAML (xmlsec)
+        run: sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt1-dev libxmlsec1-dev pkg-config
+      - name: Install
+        run: pip install --no-binary lxml,xmlsec -r requirements-dev.txt
+      - name: Lint
+        run: ruff check .
+      - name: Test
+        run: pytest -q
+      - name: Migration dry run against the sample export
+        run: python scripts/migrate.py samples/legacy_export.xml --dry-run --report report.json || test $? -eq 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: migration-report
+          path: report.json
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t content-integration-kit .
+      - name: Smoke test
+        run: |
+          docker run -d -p 8000:8000 --name kit content-integration-kit
+          for i in $(seq 1 30); do curl -fs localhost:8000/healthz && break; sleep 1; done
+          curl -fs localhost:8000/articles | grep -q l-1001
+          curl -fs localhost:8000/saml/metadata | grep -q AssertionConsumerService

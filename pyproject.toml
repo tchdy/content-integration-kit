@@ -1,0 +1,21 @@
+[project]
+name = "content-integration-kit"
+version = "1.0.0"
+description = "Reference implementation of a structured-content integration: SAML SSO, XML/XSLT, signed webhooks, validated migrations."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning:onelogin.*"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["B008"]  # FastAPI's Depends() in defaults is idiomatic
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]   # long inline SAML/XML fixtures read better unwrapped
+"app/main.py" = ["E501"]  # inline HTML for the landing page

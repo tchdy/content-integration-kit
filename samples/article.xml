@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<article id="quarterly-print-costs" status="published">
+  <title>Why Print Costs Rose This Quarter</title>
+  <byline>
+    <author>Ada Mensah</author>
+    <author>Tom Reilly</author>
+  </byline>
+  <published>2026-11-02</published>
+  <section>
+    <heading>Summary</heading>
+    <para>Paper and freight costs rose for the third quarter in a row, driven mainly by energy prices at mills.</para>
+  </section>
+  <section>
+    <heading>What changes for editors</heading>
+    <para>Long-form features move to digital-first, with print editions carrying a summary and a QR link.</para>
+    <para>Regional supplements are consolidated from four to two.</para>
+  </section>
+  <tags>
+    <tag>operations</tag>
+    <tag>print</tag>
+  </tags>
+</article>

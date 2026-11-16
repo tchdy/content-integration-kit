@@ -1,0 +1,16 @@
+# Render Blueprint: New > Blueprint > pick this repo. Everything below is created for you.
+services:
+  - type: web
+    name: content-integration-kit
+    runtime: docker
+    plan: free
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: WEBHOOK_SECRET
+        generateValue: true
+      - key: IDP_METADATA_URL
+        value: https://mocksaml.com/api/saml/metadata
+      # BASE_URL is optional: the app falls back to RENDER_EXTERNAL_URL, which Render sets.

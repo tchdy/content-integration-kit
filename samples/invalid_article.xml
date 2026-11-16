@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Deliberately invalid: bad status value, missing byline, date in wrong format. -->
+<article id="Bad ID" status="live">
+  <title>Broken example</title>
+  <published>02/11/2026</published>
+  <section>
+    <para>This should fail schema validation with three clear errors.</para>
+  </section>
+</article>

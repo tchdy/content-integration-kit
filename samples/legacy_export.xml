@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Export from the (fictional) legacy CMS. Differences from the target model:
+  - element names are abbreviated (hdr/ttl/auth/dt/body/p)
+  - dates are dd/mm/yyyy
+  - authors are one semicolon-separated string
+  - "state" uses legacy codes: D (draft), R (review), P (published)
+  - one record (L-1004) is broken on purpose: it has no body, so it must be
+    reported as a failure rather than silently imported.
+-->
+<export system="legacy-cms" exported="2026-11-10">
+  <doc lid="L-1001" state="P">
+    <hdr>
+      <ttl>Newsroom Moves to Structured Content</ttl>
+      <auth>Ada Mensah; Priya Nair</auth>
+      <dt>14/09/2026</dt>
+      <kw>workflow,structured content</kw>
+    </hdr>
+    <body>
+      <p>From October, every story is authored as structured XML rather than free-form documents.</p>
+      <p>Templates handle layout for print, web and app from the same source.</p>
+    </body>
+  </doc>
+  <doc lid="L-1002" state="R">
+    <hdr>
+      <ttl>Style Guide Update: Numbers and Dates</ttl>
+      <auth>Tom Reilly</auth>
+      <dt>01/10/2026</dt>
+      <kw>style</kw>
+    </hdr>
+    <body>
+      <p>Spell out numbers one to nine; use numerals from 10.</p>
+    </body>
+  </doc>
+  <doc lid="L-1003" state="D">
+    <hdr>
+      <ttl>Draft: Archive Digitisation Plan</ttl>
+      <auth>Priya Nair</auth>
+      <dt></dt>
+      <kw></kw>
+    </hdr>
+    <body>
+      <p>Scope and budget to be confirmed.</p>
+    </body>
+  </doc>
+  <doc lid="L-1004" state="P">
+    <hdr>
+      <ttl>Record With No Body</ttl>
+      <auth>Unknown</auth>
+      <dt>05/10/2026</dt>
+    </hdr>
+  </doc>
+</export>
