@@ -135,3 +135,44 @@ def test_tampered_assertion_is_rejected(client):
     raw = base64.b64decode(make_response()).decode().replace("ada@example.com", "admin@example.com")
     r = client.post("/saml/acs", data={"SAMLResponse": base64.b64encode(raw.encode()).decode()})
     assert r.status_code == 401
+
+
+def test_remote_metadata_fetch_sends_user_agent_and_is_used(monkeypatch):
+    """Regression: mocksaml.com returned 403 to python3-saml's default 'Python-urllib' fetch."""
+    import httpx
+
+    from app import saml_sp
+
+    seen = {}
+
+    def fake_get(url, **kwargs):
+        seen["url"], seen["headers"] = url, kwargs["headers"]
+        return httpx.Response(200, text=(FIXTURES / "idp_metadata.xml").read_text(),
+                              request=httpx.Request("GET", url))
+
+    monkeypatch.setattr(saml_sp.httpx, "get", fake_get)
+    saml_sp._idp_settings.cache_clear()
+    try:
+        parsed = saml_sp._idp_settings("https://idp.example/metadata", None)
+    finally:
+        saml_sp._idp_settings.cache_clear()
+    assert seen["headers"]["User-Agent"] == saml_sp.METADATA_USER_AGENT
+    assert "urllib" not in seen["headers"]["User-Agent"].lower()
+    assert parsed["idp"]["singleSignOnService"]["url"] == "https://idp.test/sso"
+
+
+def test_remote_metadata_http_error_is_reported_clearly(monkeypatch):
+    import httpx
+
+    from app import saml_sp
+
+    def forbidden(url, **kwargs):
+        return httpx.Response(403, request=httpx.Request("GET", url))
+
+    monkeypatch.setattr(saml_sp.httpx, "get", forbidden)
+    saml_sp._idp_settings.cache_clear()
+    try:
+        with pytest.raises(saml_sp.IdPConfigError, match="403"):
+            saml_sp._idp_settings("https://idp.example/metadata", None)
+    finally:
+        saml_sp._idp_settings.cache_clear()

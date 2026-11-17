@@ -17,6 +17,7 @@ from __future__ import annotations
 from functools import lru_cache
 from urllib.parse import urlparse
 
+import httpx
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
@@ -28,6 +29,25 @@ class IdPConfigError(RuntimeError):
     """IdP metadata missing, unreachable, or lacking what the SP needs."""
 
 
+# Sent when fetching IdP metadata. python3-saml's own fetch uses Python's default
+# "Python-urllib" User-Agent, which bot protection on some IdPs (mocksaml.com) rejects with 403.
+METADATA_USER_AGENT = "content-integration-kit/1.0 (SAML SP metadata fetch)"
+
+
+def _fetch_metadata(url: str) -> str:
+    resp = httpx.get(
+        url,
+        timeout=10,
+        follow_redirects=True,
+        headers={
+            "User-Agent": METADATA_USER_AGENT,
+            "Accept": "application/samlmetadata+xml, application/xml;q=0.9, text/xml;q=0.8",
+        },
+    )
+    resp.raise_for_status()
+    return resp.text
+
+
 @lru_cache(maxsize=4)
 def _idp_settings(metadata_url: str, metadata_file: str | None) -> dict:
     try:
@@ -35,7 +55,7 @@ def _idp_settings(metadata_url: str, metadata_file: str | None) -> dict:
             with open(metadata_file, encoding="utf-8") as fh:
                 parsed = OneLogin_Saml2_IdPMetadataParser.parse(fh.read())
         else:
-            parsed = OneLogin_Saml2_IdPMetadataParser.parse_remote(metadata_url, timeout=10)
+            parsed = OneLogin_Saml2_IdPMetadataParser.parse(_fetch_metadata(metadata_url))
     except Exception as exc:  # network, TLS, malformed XML
         raise IdPConfigError(f"Could not load IdP metadata from {metadata_file or metadata_url}: {exc}") from exc
     idp = parsed.get("idp", {})

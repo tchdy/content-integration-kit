@@ -85,5 +85,6 @@ lxml and xmlsec linked different libxml2 builds. Install both from source agains
 ## 4. Known issues
 | Date | Symptom | Cause | Fix |
 |---|---|---|---|
+| 2026-11 | Live `/saml/login` returned 503: `Could not load IdP metadata … HTTP Error 403` | python3-saml fetches metadata with Python's default `Python-urllib` User-Agent, which mocksaml.com's bot protection blocks | Fetch metadata ourselves with httpx and an explicit User-Agent (`_fetch_metadata`). If an IdP still blocks the host, download the metadata and set `IDP_METADATA_FILE` |
 | 2026-11 | `/xml/transform/*` returned 500 with `XMLSyntaxError: <no detail available>` after the first transform | xmlsec (SAML) sets restrictive global libxslt security settings; afterwards libxml2 refused to open stylesheet files from disk | Load schema/stylesheets from bytes (`_load_trusted`). Regression test runs in a fresh process, since earlier transforms in the same process hide it |
 | 2026-11 | Draft articles appeared in the RSS feed | Two XSLT templates matched drafts with equal priority; the processor picked the later one | `priority="1"` on the draft template; regression test `test_feed_transform_skips_drafts` |
