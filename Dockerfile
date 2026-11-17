@@ -5,7 +5,7 @@ FROM python:3.13-slim-trixie
 # libxml2; mixing a wheel-bundled libxml2 with the system one fails at import.
 RUN apt-get update \
  && apt-get install -y --no-install-recommends build-essential pkg-config \
-      libxml2-dev libxslt1-dev libxmlsec1-dev \
+      libxml2-dev libxslt1-dev libxmlsec1-dev zlib1g-dev \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
